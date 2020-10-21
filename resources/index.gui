@@ -1,0 +1,6 @@
+<svg>
+  <text id="time" x="100" y="10%"></text>
+  <text id="mode" x="0" y="30%" class="purple">Mode:</text>
+  <text id="hrm" x="0" y="45%" class="purple">BPM:</text>
+  <text id="rc" x="0" y="80%"></text>
+</svg>

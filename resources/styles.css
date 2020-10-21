@@ -1,0 +1,21 @@
+.purple {
+  font-family: Seville-Book;
+  font-size: 30;
+  fill: #9370DB;
+  text-length: 15;
+}
+
+#rc {
+  font-family: Seville-Book;
+  font-size: 30;
+  fill: #F80070;
+  text-length: 30;
+}
+
+#time {
+  font-size: 30;
+  fill: #9370DB;
+  text-align: center;
+  font-weight: bold;
+  text-length: 15;
+}
