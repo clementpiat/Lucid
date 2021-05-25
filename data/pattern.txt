@@ -1,2 +1,5 @@
 \[[0-9:]* [APM]*\]       App: 
-\(app/index.js:[0-9,]*\)
+( )*\(app/index.js:[0-9,]*\)
+
+(.)*App: 19_11_2020(.)*
+(.)*App: App msg queue full(.)*

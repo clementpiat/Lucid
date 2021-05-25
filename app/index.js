@@ -14,20 +14,22 @@ import * as fs from "fs";
 // Constants
 const listDir = listDirSync("/private/data");
 const modes = ["Day", "Night"];
-const max_log_size = 60; // The maximum length of a list that can be logged in the console
-const max_memory_size = 2048; // The maximum length of a list that can fit in memory
+const max_log_size = 40; // The maximum length of a list that can be logged in the console
+const max_memory_size = 1080; // The maximum length of a list that can fit in memory
 const vibrationType = "ping";
+const night_mode_starts = 10; // Time when night mode starts in hours
 
-const pattern = "20_10_2020"; // Pattern that we are looking for in the filenames
+const start_pattern = "19_11_2020"; // Pattern that we are looking for in the filenames
+const end_pattern = "acc_std_measures.json";
 const estimate_sleep_stage_step = 30; // Number of seconds between sleep phase estimations, muste be higher than window_transform_measures
 const record_measures_step = 1; // Number of seconds between measures
 const vibration_time_diff = 60 * 60 * 1000; // Number of milliseconds between two consecutive night vibrations
-const window_transform_measures = 15; // Numbe*r of data before we average hr measurs, computes std of acceleration, etc
+const window_transform_measures = 5; // Number of data before we average hr measures, computes std of acceleration, etc
 
 // TODO: save hr_treshold somewhere, it should be evolutive and depends on people
-const avg_hr_treshold = 68; // Threshold for bpm to detect REM sleep
-const std_acc_treshold = 1; // Threshold for acceleration to detect REM sleep
-const std_hr_treshold = 100; // TODO: estimate that
+const avg_hr_treshold = 70; // Threshold for bpm to detect REM sleep
+const std_acc_treshold = 4; // Threshold for acceleration to detect REM sleep
+const std_hr_treshold = 10; // TODO: estimate that
 const hours_threshold = 3; // Vibrate only after 3am
 
 // Global variables
@@ -72,7 +74,7 @@ function updateTimeAndMode() {
   timeLabel.text = hours + ":" + now.getMinutes();
 
   // Mode
-  if (hours >= 9 && hours < 23){mode = 0;}    
+  if (hours >= 9 && hours < night_mode_starts){mode = 0;}    
   else {mode = 1;}
 
   // Don't change UI every time
@@ -113,9 +115,9 @@ function recordMeasures() {
     n_measures += 1;
 
     if (n_measures >= window_transform_measures) {
-      hr_avg_measures.push(getAverage(hr_measures));
-      hr_std_measures.push(getStandardDeviation(hr_measures));
-      acc_std_measures.push(getStandardDeviation(acc_measures));
+      hr_avg_measures.push(Math.round(getAverage(hr_measures) * 10)/10);
+      hr_std_measures.push(Math.round(getStandardDeviation(hr_measures) * 10)/10);
+      acc_std_measures.push(Math.round(getStandardDeviation(acc_measures) * 10)/10);
 
       hr_measures = [];
       acc_measures = [];
@@ -126,6 +128,7 @@ function recordMeasures() {
   
     if (memory_state >= max_memory_size) {
       // Save and reset
+      console.log("Saving...");
       var current_time = getCurrentTime();
       fs.writeFileSync(getCurrentDate() + "_" + record_start + "_" + current_time + "_hr_avg_measures.json", hr_avg_measures, "json");
       fs.writeFileSync(getCurrentDate() + "_" + record_start + "_" + current_time + "_hr_std_measures.json", hr_std_measures, "json");
@@ -136,6 +139,7 @@ function recordMeasures() {
       hr_std_measures = [];
       acc_std_measures = [];
       memory_state = 0;
+      console.log("Saved");
     }
   }
 }
@@ -203,19 +207,20 @@ setInterval(estimateSleepStage, estimate_sleep_stage_step*1000)
 // Log properly a long list of number in the console
 function logLongList(list) {
   var n = list.length;
+  list = list.map(x => Math.round(x*10)/10);
   for (var i=0; i<n/max_log_size; i++) {
     console.log(list.slice(i*max_log_size, i*max_log_size+max_log_size))
   }
 }
 
-var dirIter = null
-var json_object = null
+var dirIter = null;
+var json_object = null;
 while((dirIter = listDir.next()) && !dirIter.done) {
   var filename = dirIter.value;
-  if (filename.slice(0, pattern.length) == pattern && filename.slice(-11) == "am_measures") {
-    // json_object  = fs.readFileSync(filename, "json");
+  if (filename.slice(0, start_pattern.length) == start_pattern && filename.slice(-end_pattern.length) == end_pattern) {
+    //json_object  = fs.readFileSync(filename, "json");
     console.log(filename);
-    // logLongList(json_object);
+    //logLongList(json_object);
   }
   // fs.unlinkSync(filename)
 }
