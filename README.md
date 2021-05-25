@@ -18,3 +18,7 @@ npm install
 npx fitbit
 fitbit$ bi
 ```
+
+## Data
+
+You can find examples of the data we record in `data`. `hrs.json` contains a list of hear rate measures, `as.json` contains a list of accelerations. 
