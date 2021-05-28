@@ -2,6 +2,8 @@
 
 Application for Fitbit smartwatches that aims at triggering lucid dream during REM sleep. Still an early stage project.
 
+![Overview](https://github.com/clementpiat/Lucid/blob/master/overview.gif)
+
 ## Overview
 
 The "Front" is in `resources/`.
